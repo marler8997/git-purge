@@ -1,0 +1,41 @@
+#!/usr/bin/env python3
+import sys
+import os
+import shutil
+
+script_dir = os.path.dirname(os.path.realpath(__file__))
+sys.path.insert(0, os.path.join(script_dir, "pylibs"))
+
+import util
+import loggy
+
+def usage():
+    print("""Usage: git-purge
+
+Options:
+  -C       repo path
+
+""")
+repo_dir = "."
+
+cmd_args = []
+argv_index = 1
+while argv_index < len(sys.argv):
+    arg = sys.argv[argv_index]
+    if not arg.startswith("-"):
+        cmd_args.append(arg)
+    elif arg == "-C":
+        argv_index, repo_dir = util.get_opt_arg(argv_index)
+    elif arg == "--verbose" or arg == "-v":
+        verbose = True
+    elif arg == "--help" or arg == "-h":
+        usage()
+        exit(1)
+    else:
+        sys.exit("Error: unknown option '{}'".format(arg))
+    argv_index += 1
+
+util.check_arg_count(usage, cmd_args, exact=0)
+
+loggy.enable = True
+loggy.run(["git", "checkout"])
